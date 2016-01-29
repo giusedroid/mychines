@@ -14,7 +14,7 @@ from random import choice
 
 # CONSTANT VALUES
 SCRIPT_NAME = sys.argv[0]
-CONFIG_PATH = sys.argv[1] || "conf/default"
+CONFIG_PATH = sys.argv[1] or "conf/default"
 
 # WEBAPP
 app = bt.Bottle()
@@ -31,7 +31,7 @@ except Exception as e:
 
 HOST = cp.get("self", "host")
 PORT = cp.get("self", "port")
-WS_URL = cp.get("websocket", "ws_url")
+WS_URL = cp.get("websocket", "ws_url") or "websocket"
 DEBUG = cp.get("self", "debug")
 RELOAD = cp.get("self", "reload")
 VERBOSE = cp.get("self","verbose")
@@ -69,3 +69,17 @@ def simulation_worker( data, sleep ):
 		time.sleep(1)
 
 
+@app.route("/echo", apply=[websocket])
+def route_ws_echo(ws):
+	while True:
+		msg = ws.receive
+		if msg is not None:
+			ws.send(msg)
+		else:
+			break
+
+"""
+@app.route(WS_URL, apply=[websocket])
+def route_websocket(ws):
+	while True:
+"""
