@@ -1,3 +1,14 @@
+"""
+  _______
+< IMPORTS >
+  -------
+         \   ^__^ 
+          \  (oo)\_______
+             (__)\       )\/\
+                 ||----w |
+                 ||     ||
+"""
+
 import bottle as bt
 import ConfigParser
 import sys
@@ -5,24 +16,45 @@ import json
 import socket
 import time 
 
-from operation import *
+from logging import *
 from bottle.ext.websocket import GeventWebSocketServer
 from bottle.ext.websocket import websocket
 from collections import deque
 from threading import Thread
 from random import choice
 
-# CONSTANT VALUES
+"""
+  _________________
+< IMPORTANT VALUES >
+  -----------------
+         \   ^__^ 
+          \  (oo)\_______
+             (__)\       )\/\
+                 ||----w |
+                 ||     ||
+    
+"""
+
 SCRIPT_NAME = sys.argv[0]
+
 try:
 	CONFIG_PATH = sys.argv[1]
 except Exception as e:
 	CONFIG_PATH = "config/default"
 
-# WEBAPP
-app = bt.Bottle()
+input_data = deque() # deque is thread safe for pop U popleft U append
 
-# CONFIGURATIONS
+"""
+  ______________
+< CONFIGURATIONS >
+  --------------
+         \   ^__^ 
+          \  (oo)\_______
+             (__)\       )\/\
+                 ||----w |
+                 ||     ||
+
+"""
 
 cp = ConfigParser.ConfigParser()
 
@@ -47,6 +79,25 @@ SIMULATION = False
 SIMULATION_DATA_URL = None
 SIMULATION_DATA = None
 
+"""
+  __________
+< SIMULATION >
+  ----------
+         \   ^__^ 
+          \  (oo)\_______
+             (__)\       )\/\
+                 ||----w |
+                 ||     ||
+
+"""
+
+def simulation_worker( data ):
+	while True:
+		to_append = choice(data)
+		input_data.append(to_append)
+		log(VERBOSE, "[{0}]\t [simulation] : INCOMING DATA : {1}".format(SCRIPT_NAME, to_append) )
+		time.sleep( choice( range(1,6) ) )
+
 if S_HOST == "None" or S_PORT == "None":
 	SIMULATION = True
 	SIMULATION_DATA_URL = cp.get("simulation", "data_path")
@@ -56,22 +107,56 @@ if S_HOST == "None" or S_PORT == "None":
 	with open(SIMULATION_DATA_URL, "r") as fp:
 		SIMULATION_DATA = fp.readlines()
 
+if SIMULATION:
+	simulation_job = Thread(target=simulation_worker, args=[SIMULATION_DATA])
+	simulation_job.daemon = True
+	simulation_job.start()
+
 if not SIMULATION:
 	input_socket = socket.socket()
-	input_socket.bind( ("", S_PORT) )
+	input_socket.bind( ("", int(S_PORT) )
 	log(VERBOSE, "[{0}]\tINPUT SOCKET BINDED TO PORT {1}".format(SCRIPT_NAME, S_PORT))
 	input_socket.listen(S_MAX_CONNECTIONS)
 
-input_data = deque()
 
-def simulation_worker( data, sleep ):
+
+
+"""
+  ______
+< WEBAPP >
+  ------
+         \   ^__^ 
+          \  (oo)\_______
+             (__)\       )\/\
+                 ||----w |
+                 ||     ||
+
+"""
+
+app = bt.Bottle()
+
+# WEBSOCKET SERVER
+@app.route("/"+WS_URL, apply=[websocket])
+def route_websocket(ws):
 	while True:
-		to_append = choice(data)
-		input_data.append(to_append)
-		log(VERBOSE, "[{0}]\t [simulation] : INCOMING DATA : {1}".format(SCRIPT_NAME, ) )
-		time.sleep(1)
+		try:
+			ws.send(input_data.popleft()) # THREAD SAFE :)
+		except Exception as e:
+			log(DEBUG, "[{0}]\t : ERROR : {1}".format(SCRIPT_NAME, e) )
+			time.sleep(0.1)
 
 
+
+# WEBSOCKET CLIENT
+@app.route("/simulation_client")
+def route_view_simulation():
+	return bt.template('client', url=WS_URL)
+
+#####################################################################################
+#							TEST STUFF												#
+#####################################################################################
+
+# ECHO WEBSOCKET SERVER SIDE
 @app.route("/echo", apply=[websocket])
 def route_ws_echo(ws):
 	while True:
@@ -81,14 +166,15 @@ def route_ws_echo(ws):
 		else:
 			break
 
-@app.route("/client")
+# ECHO WEBSOCKET CLIENT
+@app.route("/echo_client")
 def route_view_echo():
-	return bt.template('socket_client')
+	return bt.template('echo_client')
 
-"""
-@app.route(WS_URL, apply=[websocket])
-def route_websocket(ws):
-	while True:
-"""
 
-app.run( host=HOST, port=PORT, debug=DEBUG, reloader=RELOAD, server=GeventWebSocketServer)
+# INSPECT INPUT_DATA
+@app.route("/input_data")
+def route_inspect_data():
+	return str(input_data)
+
+app.run( host=HOST, port=PORT, debug=DEBUG, reloader=RELOAD, server=GeventWebSocketServer )
