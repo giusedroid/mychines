@@ -1,5 +1,5 @@
 [self]
-host=0.0.0.0
+host=localhost
 port=8079
 debug=True
 reload=True

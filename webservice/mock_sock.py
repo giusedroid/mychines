@@ -14,7 +14,10 @@ from random import choice
 
 # CONSTANT VALUES
 SCRIPT_NAME = sys.argv[0]
-CONFIG_PATH = sys.argv[1] or "conf/default"
+try:
+	CONFIG_PATH = sys.argv[1]
+except Exception as e:
+	CONFIG_PATH = "config/default"
 
 # WEBAPP
 app = bt.Bottle()
@@ -32,19 +35,19 @@ except Exception as e:
 HOST = cp.get("self", "host")
 PORT = cp.get("self", "port")
 WS_URL = cp.get("websocket", "ws_url") or "websocket"
-DEBUG = cp.get("self", "debug")
-RELOAD = cp.get("self", "reload")
-VERBOSE = cp.get("self","verbose")
+DEBUG = cp.getboolean("self", "debug")
+RELOAD = cp.getboolean("self", "reload")
+VERBOSE = cp.getboolean("self","verbose")
 
 S_HOST = cp.get("socket", "host")
-S_PORT = cp.getint("socket", "port")
+S_PORT = cp.get("socket", "port")
 S_MAX_CONNECTIONS = cp.get("socket", "max_connections")
 
 SIMULATION = False
 SIMULATION_DATA_URL = None
 SIMULATION_DATA = None
 
-if S_HOST is None or S_PORT is None:
+if S_HOST == "None" or S_PORT == "None":
 	SIMULATION = True
 	SIMULATION_DATA_URL = cp.get("simulation", "data_path")
 	log(VERBOSE, "[{0}]\tSIMULATION ACTIVE".format(SCRIPT_NAME))
@@ -72,14 +75,20 @@ def simulation_worker( data, sleep ):
 @app.route("/echo", apply=[websocket])
 def route_ws_echo(ws):
 	while True:
-		msg = ws.receive
+		msg = ws.receive()
 		if msg is not None:
 			ws.send(msg)
 		else:
 			break
+
+@app.route("/client")
+def route_view_echo():
+	return bt.template('socket_client')
 
 """
 @app.route(WS_URL, apply=[websocket])
 def route_websocket(ws):
 	while True:
 """
+
+app.run( host=HOST, port=PORT, debug=DEBUG, reloader=RELOAD, server=GeventWebSocketServer)
