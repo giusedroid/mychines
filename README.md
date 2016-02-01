@@ -1,7 +1,11 @@
 # mychines
 
-This is a frontend for a cloud monitoring web service written by
-Dr. Jacopo Pellegrino, PhD
+This project is comprised of two services
+<ul>
+<li>Socket to WebSocket Pipe for a Cloud Monitoring Service written by
+Dr. Jacopo Pellegrino, PhD</li>
+<li>Customizable Bootstrap Frontend</li>
+</ul>
 
 Java Physics Stuff <- TPC Socket -> <- Web Socket -> Simulation Front End
 
