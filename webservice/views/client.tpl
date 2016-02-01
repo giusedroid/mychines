@@ -9,5 +9,10 @@
 		console.log(event.data);
 	};
 
+	window.onbeforeunload = function() {
+    	ws.onclose = function () {}; 
+    	ws.close();
+	};
+
 
 </script>

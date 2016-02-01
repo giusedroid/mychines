@@ -16,7 +16,7 @@ import json
 import socket
 import time 
 
-from logging import *
+from logging_utils import *
 from bottle.ext.websocket import GeventWebSocketServer
 from bottle.ext.websocket import websocket
 from collections import deque
@@ -114,11 +114,9 @@ if SIMULATION:
 
 if not SIMULATION:
 	input_socket = socket.socket()
-	input_socket.bind( ("", int(S_PORT) )
+	input_socket.bind( ("", int(S_PORT) ))
 	log(VERBOSE, "[{0}]\tINPUT SOCKET BINDED TO PORT {1}".format(SCRIPT_NAME, S_PORT))
 	input_socket.listen(S_MAX_CONNECTIONS)
-
-
 
 
 """
@@ -152,9 +150,17 @@ def route_websocket(ws):
 def route_view_simulation():
 	return bt.template('client', url=WS_URL)
 
-#####################################################################################
-#							TEST STUFF												#
-#####################################################################################
+
+"""
+  ______
+< TESTS >
+  ------
+         \   ^__^ 
+          \  (oo)\_______
+             (__)\       )\/\
+                 ||----w |
+                 ||     ||
+"""
 
 # ECHO WEBSOCKET SERVER SIDE
 @app.route("/echo", apply=[websocket])
