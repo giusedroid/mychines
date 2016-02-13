@@ -117,8 +117,11 @@ def actual_worker():
   while True:
     try:
       input_conn, address = input_socket.accept()
-      data = input_conn.recv(S_BUFFERSIZE)
-      input_data.push(data)
+      while True:
+        data = input_conn.recv(S_BUFFERSIZE)
+        input_data.push(data)
+        if data == "{instruction:close}":
+          break
       input_conn.close()
     except Exception as e:
       log(VERBOSE, "[{0}]\tSocket Read Error:\t{1}".format(SCRIPT_NAME, e))
