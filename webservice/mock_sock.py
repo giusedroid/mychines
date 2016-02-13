@@ -114,6 +114,14 @@ if SIMULATION:
 	simulation_job.start()
 
 def actual_worker():
+  input_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  input_socket.bind( (S_HOST, int(S_PORT) ))
+
+  log(VERBOSE, "[{0}]\tINPUT SOCKET BINDED TO PORT {1}".format(SCRIPT_NAME, S_PORT))
+  
+  input_socket.listen(S_MAX_CONNECTIONS)
+  input_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+  
   while True:
     try:
       input_conn, address = input_socket.accept()
@@ -130,13 +138,6 @@ def actual_worker():
 
 
 if not SIMULATION:
-  input_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  input_socket.bind( (S_HOST, int(S_PORT) ))
-  log(VERBOSE, "[{0}]\tINPUT SOCKET BINDED TO PORT {1}".format(SCRIPT_NAME, S_PORT))
-  input_socket.listen(S_MAX_CONNECTIONS)
-  input_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-  
-
   actual_job = Thread(target=actual_worker)
   actual_job.daemon = True
   actual_job.start()
