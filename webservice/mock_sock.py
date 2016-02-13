@@ -148,7 +148,7 @@ def route_websocket(ws):
 # WEBSOCKET CLIENT
 @app.route("/simulation_client")
 def route_view_simulation():
-	return bt.template('client', url=WS_URL)
+	return bt.template('client', url=WS_URL, host=HOST, port=PORT)
 
 
 """
