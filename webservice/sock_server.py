@@ -10,7 +10,10 @@ input_socket.listen(5)
 
 while True:
 	connection, address = input_socket.accept()
-	data = connection.recv(4096)
-	print data
+	while True:
+		data = connection.recv(4096)
+		print data
+		if data == "q":
+			break
 	connection.close()
 
