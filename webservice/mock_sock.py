@@ -72,8 +72,9 @@ RELOAD = cp.getboolean("self", "reload")
 VERBOSE = cp.getboolean("self","verbose")
 
 S_HOST = cp.get("socket", "host")
-S_PORT = cp.get("socket", "port")
-S_MAX_CONNECTIONS = cp.get("socket", "max_connections")
+S_PORT = cp.getint("socket", "port")
+S_MAX_CONNECTIONS = cp.getint("socket", "max_connections")
+S_BUFFERSIZE = cp.getint("socket", "buffersize")
 
 SIMULATION = False
 SIMULATION_DATA_URL = None
@@ -112,11 +113,31 @@ if SIMULATION:
 	simulation_job.daemon = True
 	simulation_job.start()
 
+def actual_worker():
+  while True:
+    try:
+      input_conn, address = input_socket.accept()
+      data = input_conn.recv(S_BUFFERSIZE)
+      input_data.push(data)
+      input_conn.close()
+    except Exception as e:
+      log(VERBOSE, "[{0}]\tSocket Read Error:\t{1}".format(SCRIPT_NAME, e))
+    
+    time.sleep(0.1)
+
+
 if not SIMULATION:
-	input_socket = socket.socket()
-	input_socket.bind( ("", int(S_PORT) ))
-	log(VERBOSE, "[{0}]\tINPUT SOCKET BINDED TO PORT {1}".format(SCRIPT_NAME, S_PORT))
-	input_socket.listen(S_MAX_CONNECTIONS)
+  input_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  input_socket.bind( (S_HOST, int(S_PORT) ))
+  log(VERBOSE, "[{0}]\tINPUT SOCKET BINDED TO PORT {1}".format(SCRIPT_NAME, S_PORT))
+  input_socket.listen(S_MAX_CONNECTIONS)
+  input_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+  
+
+  actual_job = Thread(target=actual_worker)
+  actual_job.daemon = True
+  actual_job.start()
+
 
 
 """
@@ -148,7 +169,7 @@ def route_websocket(ws):
 # WEBSOCKET CLIENT
 @app.route("/simulation_client")
 def route_view_simulation():
-	return bt.template('client', url=WS_URL, host=HOST, port=PORT)
+	return bt.template('client', url=WS_URL, port=PORT)
 
 
 """

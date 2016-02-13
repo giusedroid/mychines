@@ -1,5 +1,5 @@
 <script type="text/javascript">
-	var ws = new WebSocket("ws://{{host}}:{{port}}/{{url}}");
+	var ws = new WebSocket("ws://localhost:{{port}}/{{url}}");
 
 	ws.onopen = function (event){
 		console.log("WebSocket connection enstabilished");

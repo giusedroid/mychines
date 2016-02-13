@@ -1,5 +1,5 @@
 [self]
-host=localhost
+host=0.0.0.0
 port=8079
 debug=True
 reload=True
@@ -9,9 +9,10 @@ verbose=True
 ws_url=websocket
 
 [socket]
-host=None
-port=None
+host=192.168.1.77
+port=8082
 max_connections=5
+buffersize=4096
 
 [simulation]
 data_path=data/actual.json
