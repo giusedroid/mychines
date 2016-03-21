@@ -1,0 +1,9 @@
+[self]
+host=localhost
+port=8088
+debug=True
+reload=True
+verbose=True
+
+[simulation]
+data_path=data/actual.json

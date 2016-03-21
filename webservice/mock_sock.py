@@ -114,32 +114,32 @@ if SIMULATION:
 	simulation_job.start()
 
 def actual_worker():
+  
+  #input_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+  try:
+    while True:
+      input_conn, address = input_socket.accept()
+      while True:
+        data = input_conn.recv(S_BUFFERSIZE)
+        input_data.append(data)
+        if data == "{instruction:'close'}":
+          break
+      input_conn.close()
+  except Exception as e:
+    log(VERBOSE, "[{0}]\tSocket Read Error:\t{1}".format(SCRIPT_NAME, e))
+  
+
+
+if not SIMULATION:
   input_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  input_socket.bind( (S_HOST, int(S_PORT) ))
+  input_socket.bind( (S_HOST, int(S_PORT)) )
 
   log(VERBOSE, "[{0}]\tINPUT SOCKET BINDED TO PORT {1}".format(SCRIPT_NAME, S_PORT))
   
   input_socket.listen(S_MAX_CONNECTIONS)
-  input_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
   
-  while True:
-    try:
-      input_conn, address = input_socket.accept()
-      while True:
-        data = input_conn.recv(S_BUFFERSIZE)
-        input_data.push(data)
-        if data == "{instruction:close}":
-          break
-      input_conn.close()
-    except Exception as e:
-      log(VERBOSE, "[{0}]\tSocket Read Error:\t{1}".format(SCRIPT_NAME, e))
-    
-    time.sleep(0.1)
-
-
-if not SIMULATION:
   actual_job = Thread(target=actual_worker)
-  actual_job.daemon = True
+  actual_job.daemon = False
   actual_job.start()
 
 

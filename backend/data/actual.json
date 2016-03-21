@@ -1,0 +1,12 @@
+{
+"name":"global-agent",
+"time":"11:00:00",
+"jobRequests":38,
+"doneJobs":6,
+"failedJobs":10,
+"refusedJobs":11,
+"totCreatedVM":13,
+"trustMatrixDecrements":109,
+"trustMatrixVariations":115,
+"trustMatrixIncrements":6
+}

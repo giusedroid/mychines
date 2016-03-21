@@ -1,6 +1,6 @@
 [self]
 host=localhost
-port=8079
+port=16000
 debug=True
 reload=True
 verbose=True
@@ -10,7 +10,7 @@ ws_url=websocket
 
 [socket]
 host=localhost
-port=8081
+port=8082
 max_connections=5
 buffersize=4096
 

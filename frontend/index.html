@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>frontend</title>
+	<link rel="stylesheet" type="text/css" href="css/epoch.min.css">
+</head>
+
+<body>
+<!--
+{
+"name":"global-agent",
+"time":"11:00:00",
+"jobRequests":38,
+"doneJobs":6,
+"failedJobs":10,
+"refusedJobs":11,
+"totCreatedVM":13,
+"trustMatrixDecrements":109,
+"trustMatrixVariations":115,
+"trustMatrixIncrements":6
+}
+-->
+<div>
+	<h1>Global Agent</h1>
+	<ul>
+		<li id="time"></li>
+		<li id="jobRequests"></li>
+		<li id="doneJobs"></li>
+		<li id="failedJobs"></li>
+		<li id="refusedJobs"></li>
+		<li id="totCreatedVM"></li>	
+		<li id="trustMatrixDecrements"></li>
+		<li id="trustMatrixVariations"></li>
+		<li id="trustMatrixIncrements"></li>
+	</ul>
+</div>
+
+<div id="areaChart" style="width: 800px; height: 200px" class="epoch"></div>
+
+<script type="text/javascript" src="js/jquery-2.2.2.min.js"></script>
+<script type="text/javascript" src="js/d3.min.js" ></script>
+<script type="text/javascript" src="js/epoch.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>
