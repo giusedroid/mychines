@@ -1,8 +1,3 @@
-var requestJobs = {label:'RequestJobs', values:[]};
-var doneJobs = {label:'DoneJobs', values:[]};
-var failedJobs = {label:'FailedJobs', values:[]};
-var refusedJobs = {label:'RefusedJobs', values:[]};
-//var areaChartData = [requestJobs, doneJobs, failedJobs, refusedJobs];
 var areaChartData = [
 {label:'RequestJobs', values:[]},
 {label:'DoneJobs', values:[]},
